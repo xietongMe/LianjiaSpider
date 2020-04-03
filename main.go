@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"os"
 	"sync"
+	"time"
 	"xietong.me/LianjiaSpider/common"
 	"xietong.me/LianjiaSpider/spider"
 )
@@ -13,21 +15,23 @@ func main() {
 	InitConfig()
 	db := common.InitDB()
 	defer db.Close()
-	// "yuelu", "tianxin", "kaifu", "furong", "wangcheng", "ningxiang", "liuyang", "changshaxian"
-	district := [1]string{"yuhua"}
+
+	// "yuhua","yuelu", "tianxin", "kaifu", "furong", "wangcheng", "ningxiang", "liuyang", "changshaxian"
+	district := [1]string{"wangcheng"}
 	var wg sync.WaitGroup
 	for _, districtName := range district {
-		for page := 1; page < 3; page++ {
+		for page := 1; page < 27; page++ {
 			wg.Add(1)
-			go func() {
-				//num := rand.Intn(200)
-				//time.Sleep(time.Duration(num) * time.Second)
+			go func(page int) {
+				fmt.Println("start spider", page)
 				defer wg.Done()
+				time.Sleep(time.Duration(page) * time.Millisecond)
 				spider.GetSellingInfoSpider(db, districtName, page)
-			}()
+			}(page)
 		}
 	}
 	wg.Wait()
+
 }
 
 //初始化配置函数
