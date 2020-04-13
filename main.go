@@ -10,6 +10,7 @@ import (
 	"xietong.me/LianjiaSpider/spider"
 )
 
+//https://cs.lianjia.com/ershoufang/ 长沙市链家网爬虫
 func main() {
 	//初始化配置
 	InitConfig()
@@ -17,10 +18,10 @@ func main() {
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(20)
 	defer db.Close()
-	// "yuhua","yuelu", "tianxin", "kaifu", "furong", "wangcheng", "ningxiang", "liuyang", "changshaxian"
 	district := [9]string{"yuhua", "yuelu", "tianxin", "kaifu", "furong", "wangcheng", "ningxiang", "liuyang", "changshaxian"}
 	var wgSelling sync.WaitGroup
 	var wgSold sync.WaitGroup
+	//通过循环来爬取不同地区，同时获取不同地区的总分页数来爬取不同页面的数据
 	for _, districtName := range district {
 		totalSellingPage := spider.GetSellingPageSpider(db, districtName)
 		for page := 1; page < totalSellingPage; page++ {
