@@ -1,7 +1,7 @@
 # LianjiaSpider
 
 ## 目标
-我们的目标站点是链家,主要爬取[在售二手房]((https://cs.lianjia.com/ershoufang/))数据以及[已售成交](https://cs.lianjia.com/chengjiao/)数据
+我们的目标站点是链家,主要爬取[在售二手房](https://cs.lianjia.com/ershoufang/)数据以及[已售成交](https://cs.lianjia.com/chengjiao/)数据
 
 本次爬取在售数据的七个字段（房子id、小区名称、房子总价、房子单价、所属行政区、详细区域、面积），
 已售数据的八个字段（房子id、小区名称、房子总价、房子单价、所属行政区、具体地区、交易年份、交易月份、面积）
