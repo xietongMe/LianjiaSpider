@@ -13,13 +13,12 @@ import (
 )
 
 func GetSellingInfoSpider(db *gorm.DB, districtName string, page int) {
-	time.Sleep(time.Duration(page) * time.Millisecond)
 	c := colly.NewCollector(
 		//colly.Async(true),并发
 		colly.AllowURLRevisit(),
 		colly.UserAgent("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"),
 	)
-	c.SetRequestTimeout(time.Duration(35	) * time.Second)
+	c.SetRequestTimeout(time.Duration(120) * time.Second)
 	c.Limit(&colly.LimitRule{DomainGlob: "https://cs.lianjia.com/ershoufang", Parallelism: 1}) //Parallelism代表最大并发数
 	c.OnRequest(func(r *colly.Request) {
 		log.Println("Visiting", r.URL)
@@ -40,9 +39,12 @@ func GetSellingInfoSpider(db *gorm.DB, districtName string, page int) {
 		area, _ := strconv.Atoi(string(re.Find([]byte(strings.Split(e.ChildText("div.info > div.address > div.houseInfo "), " | ")[1])))) // //读取页面元素获取面积,正则匹配单价的数字，转换成int类型
 		if houseId != "" {
 			fmt.Println("start save", houseId, page)
-			time.Sleep(time.Duration(page) * time.Millisecond)
 			sellingInfo := model.Selling{Id: houseId, Name: name, TotalPrice: totalPrice, UnitPrice: unitPrice, District: districtName, Region: region, Area: area}
-			db.Save(&sellingInfo)
+			err := db.Save(&sellingInfo).Error
+			for ; err != nil; {
+				sellingInfo := model.Selling{Id: houseId, Name: name, TotalPrice: totalPrice, UnitPrice: unitPrice, District: districtName, Region: region, Area: area}
+				err = db.Save(&sellingInfo).Error
+			}
 		}
 	})
 	c.OnError(func(_ *colly.Response, err error) {
